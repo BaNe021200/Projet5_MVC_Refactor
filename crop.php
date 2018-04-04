@@ -4,7 +4,7 @@ require_once 'functions.php';
 require_once 'model/UserManager.php';
 
 
-use model\UserManager;
+use model\oldUserManager;
 
 
 
@@ -134,7 +134,7 @@ function cropcenter($image){
 }*/
 
 function thumbNails2($width,$height,$userId,$photoId){
-    $user= new UserManager();
+    $user= new oldUserManager();
     $images=$user->getPhoto2Thumb($userId,$photoId);
 
 

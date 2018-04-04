@@ -2,12 +2,11 @@
 declare(strict_types=1);
 session_start();
 require_once 'vendor/autoload.php';
-require_once 'model/functions.php';
 require_once 'model/UserManager.php';
 require_once 'controler/backend.php';
 require_once 'lib/Session.php';
 //require_once 'vendor/twig/twig/lib/Twig/Extension/Session.php';
-use model\UserManager;
+use model\oldUserManager;
 
 
 
@@ -19,7 +18,7 @@ use model\UserManager;
 
         function twigRender($renderPath,$argument1,$argument2,$argument3,$argument4)
         {
-            $user = new UserManager();
+            //$user = new UserManager();
 
 
 
@@ -34,12 +33,12 @@ use model\UserManager;
                 @$src = "users/img/user/" . $_COOKIE['username'] . "/crop/img_001-cropped.jpg";
             }
 
-            @$getArchiveMessages=$user->getArchiveMessages($_COOKIE['ID']);
+           /* @$getArchiveMessages=$user->getArchiveMessages($_COOKIE['ID']);
             @$getReadMessages=$user->getReadMessages($_COOKIE['ID']);
             @$countUreadMessages = $user->countUnreadMessage($_COOKIE['ID']);
             @$countReadMessages = $user->countReadMessage($_COOKIE['ID']);
             @$archiveMessage = $user->countArchiveMessage($_COOKIE['ID']);
-            @$countSentMessage = $user->countSentMessages($_COOKIE['ID']);
+            @$countSentMessage = $user->countSentMessages($_COOKIE['ID']);*/
 
 
 
@@ -58,19 +57,19 @@ use model\UserManager;
             ]);
             $twig->addExtension(new Twig_Extension_Debug());
             $twig->addExtension(new Twig_Extensions_Extension_Text());
-            $twig->addGlobal('unreadMessages',$countUreadMessages);
+            //$twig->addGlobal('unreadMessages',$countUreadMessages);
 
            // $twig->addExtension(new Twig_Extension_Session());
 
             echo $twig->render($renderPath,[
                 'userDatum' => $_SESSION,
                 @'imageProfil'=>$src,
-                'Messagesread'=>$getReadMessages,
+               /* 'Messagesread'=>$getReadMessages,
                 'archiveMessages'=>$getArchiveMessages,
                // 'unreadMessages'=>$countUreadMessages,
                 'countReadMessages'=>$countReadMessages,
                 'countArchiveMessages'=>$archiveMessage,
-                'countSentMessages'=>$countSentMessage,
+                'countSentMessages'=>$countSentMessage,*/
 
 
 

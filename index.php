@@ -3,7 +3,9 @@ declare(strict_types=1);
 require_once 'twig.php';
 require_once 'controler/backend.php';
 require_once 'controler/frontend.php';
-
+require_once 'model/Autoloader.php';
+use model\Autoloader;
+Autoloader::register();
 
 try
 {
@@ -40,7 +42,7 @@ if (isset($_GET['p']))
 
     elseif ($_GET['p'] == 'homeUser'){
         if(isset($_COOKIE['ID'])&& isset($_COOKIE['username'])){
-            
+
             homeUser();
 
         }
@@ -168,7 +170,7 @@ if (isset($_GET['p']))
                         }
                         elseif (preg_match('/^[a-zA-Z0-9_]+$/',$_POST['username'] ))
                         {
-                            controlUsername($_POST['username']);
+                            controlUsername($_POST['username'],"username");
                         }
                         else
                         {

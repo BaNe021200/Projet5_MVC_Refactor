@@ -1,4 +1,5 @@
 <?php
+namespace lib;
 /**
  * Created by PhpStorm.
  * User: connector

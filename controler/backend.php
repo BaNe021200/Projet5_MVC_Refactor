@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
+//require_once 'model/Autoloader.php';
 
 
-require_once 'model/UserManager.php';
 require_once 'twig.php';
 require_once 'functions.php';
 require_once 'model/User.php';
@@ -11,11 +11,13 @@ require_once 'resize2.php';
 require_once 'crop.php';
 //require_once 'listProfils.php';
 
-use model\UserManager;
-use model\User;
+//use model\Autoloader;
+
+//Autoloader::register();
+
 
 /*function addNewUser(){
-    $user = new UserManager();
+    $user = new oldUserManager();
     $newUser = $user->addUser();
     if($newUser)
     {
@@ -29,18 +31,23 @@ use model\User;
 }*/
 
 
-function controlUsername($username)
+function controlUsername($username,$queryItem)
 {
-        $userManager= new UserManager();
-        $getUsername = $userManager->controlUsername($username);
-        if(is_null($getUsername))
+        //$queryItem="username";
+        $manager= new \model\Manager();
+        $getUsername=$manager->readUser($username,$queryItem);
+
+        if($getUsername===null)
         {
             calendarControl();
         }
         else
         {
-            throw new Exception("Le pseudo ".$username." existe déjà !");
+            throw new Exception('le pseudo "'.$username.'" est déjà pris');
         }
+
+
+
 }
 
 //on contrôle la date
@@ -90,12 +97,6 @@ function emailcontrol()
 {
     if (!empty($_POST['email']))
     {
-        /*$_POST['email'] = htmlspecialchars($_POST['email']);
-        if (preg_match("#^[a-z0-9._-]+@[a-z0-9._-]{2,}\.[a-z]{2,4}$#", $_POST['email']))
-        {
-            getLastEmail($_POST['email']);//on vérifie que le meail est bine unique
-
-        }*/
 
         if(filter_var($_POST['email'], FILTER_VALIDATE_EMAIL))
         {
@@ -112,9 +113,11 @@ function emailcontrol()
 
 function getLastEmail($email)
 {
-    $veryEmail= new UserManager();
-    $getEmail = $veryEmail->getEmail($email);
-    if(is_null($getEmail))
+
+    $manager= new \model\Manager();
+    $getEmail = $manager->readUser($email,"email");
+
+    if($getEmail===null)
     {
         controlPasswords();
     }
@@ -122,6 +125,8 @@ function getLastEmail($email)
     {
         throw new Exception("L'adresse mail ".$email." existe déjà. veuillez en saisir une autre !");
     }
+
+
 }
 
 function controlPasswords()
@@ -146,17 +151,18 @@ function homeUser()
         $src = "users/img/user/" . $_COOKIE['username'] . "/crop/img_001-cropped.jpg";
     }
 
-    $user= new UserManager();
-    $isConnected = $user->getUserName($_COOKIE['ID']);
+    //$user= new oldUserManager();
+    //$isConnected = $user->getUserName($_COOKIE['ID']);
+    $userManager = new \model\UserManager();
+    $isConnected = $userManager->read($_COOKIE['ID']);
 
-
-    if(($isConnected['id']===$_COOKIE['ID']) && ($isConnected['username']===$_COOKIE['username']))
+    if(($isConnected->getId()===$_COOKIE['ID']) && ($isConnected->getUsername()===$_COOKIE['username']))
     {
-        $user= new UserManager();
-        $connectedSelf=$user->isConnectedSelf($_COOKIE['ID']);
+        $manager = New \model\Manager();
+        $connectedSelf=$manager->isConnectedSelf($_COOKIE['ID']);
     }
 
-    $iNLine=$user->whoIsOnLine($_COOKIE['ID'],$_COOKIE['ip']);
+
 
 
 
@@ -166,7 +172,7 @@ function homeUser()
 
 /*function listProfile()
 {
-    $user=new UserManager();
+    $user=new oldUserManager();
     //$userProfileNbx=$user->getUserProfileNbx();
 
     $data= $user->homeDisplay();
@@ -206,7 +212,7 @@ function homeUser()
 
 /*function pagination()
 {
-    $user=new UserManager();
+    $user=new oldUserManager();
     $data= $user->homeDisplay();
     $nbUsers=$data['nbUsers'];
     foreach ($data as $datum)
@@ -240,7 +246,7 @@ function homeUser()
 }*/
 
 function imageProfile()
-{    $user = new UserManager();
+{    $user = new oldUserManager();
     if (!file_exists('users/img/user/'.$_COOKIE['username'].'/profilPicture')) {
         newFolderProfilPicture();
         if (file_exists("users/img/user/" . $_COOKIE['username'] . "/crop/img_001-cropped-center.jpg")) {
@@ -271,7 +277,7 @@ function galerie1()
 
 function infosUser()
 {
-    $user= new UserManager();
+    $user= new oldUserManager();
     $getinfos= $user->getUserInfos($_COOKIE['ID']);
 
 
@@ -288,43 +294,45 @@ function connectUser()
 
 function authentificationConnexion()
 {
-    $userManager = new UserManager();
-    $authentification = $userManager->getConnexion();
-    $userDatum = $userManager->getUserMainData();//var_dump($userData['gender']);die;
-    $pwd = $_POST['password'];
-    if (!is_null($authentification)) {
-        if (password_verify($pwd, $authentification)) {
+    $manager =new \model\Manager();
+    $getUserCredential = $manager->readUser($_POST['username'],"username");
 
-            //session_start();
-
-            $_SESSION['id'] = $userDatum['id'];//;
-            $_SESSION['username'] = $userDatum['username'];
-            $_SESSION['first_name'] = $userDatum['first_name'];
-            $_SESSION['gender'] = $userDatum['gender'];
-            $_SESSION['ip'] =$_SERVER['SERVER_ADDR'];
+    $pwd=$_POST['password'];
+//var_dump($getUserCredential);
+    if(!is_null($getUserCredential))
+    {
+        if(password_verify($pwd,$getUserCredential->getPassword()))
+        {
+            $_SESSION['id'] = strval($getUserCredential->getId());var_dump($_SESSION['id']);
+            $_SESSION['username'] = $getUserCredential->getUsername();
+            $_SESSION['first_name'] = $getUserCredential->getFirstName();
+            $_SESSION['gender'] = $getUserCredential->getGender();
+            $_SESSION['ip'] = $_SERVER['SERVER_ADDR'];
 
             setcookie("ID", $_SESSION['id'], time() + 3600 * 24 * 365, '', '', false, true);
             setcookie("username", $_SESSION['username'], time() + 3600 * 24 * 365, '', '', false, true);
             setcookie("first_name", $_SESSION['first_name'], time() + 3600 * 24 * 365, '', '', false, true);
             setcookie("ip", $_SESSION['ip'], time() + 3600 * 24 * 365, '', '', false, true);
-
-
-
             header('Location:index.php?p=homeUser');
-            //twigRender('homeUserFront.html.twig','','','','');
-
-
-        } else {
-            throw new Exception('Mauvais identifiant ou mot de passe !');
+        }else{
+            throw new Exception('Mauvais identifiant ou mot de passe');
         }
-    } else {
-        throw new Exception('Cet identifiant n\'existe pas !');
+
+    }else{
+        throw new Exception('Cet identifiant n\'existe pas');
     }
+
+
+
+
+
+
+
 }
 
 function disconnectUser()
 {
-    $user=new UserManager();
+    $user=new oldUserManager();
     @$disconnectUser =$user->disconnectUser($_COOKIE['ID']);
     session_destroy();
     setcookie("ID","", time()- 60);
@@ -341,7 +349,7 @@ function uploadPicture($userId,$img)
 {
 
 
-    $user=new UserManager();
+    $user=new oldUserManager();
 
     $messages = [];
 
@@ -469,7 +477,7 @@ function uploadPicture($userId,$img)
 function recropped($userId,$img){
 
 
-    $user=new UserManager();
+    $user=new oldUserManager();
     $folder="users/img/user/".$_COOKIE['username'].'/img_00'.$img.'.jpg';
     $file2crop="users/img/user/".$_COOKIE['username'].'/crop/img_00'.$img.'-cropped.jpg';
     if(file_exists($folder))
@@ -492,7 +500,7 @@ function recropped($userId,$img){
 
 function croppedChoice($userId,$img){
 
-       $user= new UserManager();
+       $user= new oldUserManager();
     $src="users/img/user/".$_COOKIE['username']."/crop/img_001-cropped-center.jpg";
 
     $croppedFile2Delete=$user->deleteImageCroppedCenter($userId,$img);
@@ -517,7 +525,7 @@ function getUserImages($userId)
 
    /* $folderThumbnails = glob('users/img/user/'.$_COOKIE['username'].'/thumbnails/*.jpg');
     $folder=glob('users/img/user/'.$_COOKIE['username'].'/*.jpg');*/
-    $user=new UserManager();
+    $user=new oldUserManager();
     $folder=$user->getThumbnails($userId);
 
 twigRender('galerie3.html.twig','images',$folder,'','');
@@ -528,7 +536,7 @@ twigRender('galerie3.html.twig','images',$folder,'','');
 
 function getAllImages()
 {
-    $user = new UserManager();
+    $user = new oldUserManager();
     $allImages = $user->getAllFiles();
     require_once 'templates/photo.php';
 }
@@ -548,7 +556,7 @@ function pathInfosuserImages()
 function deleteImage($userId,$imageId)
 {
     //var_dump($imageId);die;
-    $user= new UserManager();
+    $user= new oldUserManager();
     $imageDeleted=$user->deleteImage($userId,$imageId);
     if($imageId==='1')
     {
@@ -600,7 +608,7 @@ function deleteImage($userId,$imageId)
 
 function viewerGalerie($imageId)
 {
-    $user=new UserManager();
+    $user=new oldUserManager();
     $view = $user->getUserView($imageId);
 
     twigRender('galerieViewer.html.twig','view',$view,'','');
@@ -608,7 +616,7 @@ function viewerGalerie($imageId)
 
 function frontGalerieViewer($imageId,$username)
 {
-    $user=new UserManager();
+    $user=new oldUserManager();
     $view = $user->getFrontUserView($imageId,$username);
 
 
@@ -617,7 +625,7 @@ function frontGalerieViewer($imageId,$username)
 
 function viewerGalerie2($imageId)
 {
-    $user=new UserManager();
+    $user=new oldUserManager();
     $view = $user->getUserView($imageId);
 
     twigRender('galerieViewer.html.twig','view',$view,'','');
@@ -643,7 +651,7 @@ function saveUserinfos($userId)
     $_SESSION['work_add']= $_POST['work_add'];*/
 
 
-    $user=new UserManager();
+    $user=new oldUserManager();
     $userInfos = $user->addUserInfos($userId);var_dump($userInfos);
 
 
@@ -655,7 +663,7 @@ function saveUserinfos($userId)
 
 function deleteUserInfos($userId)
 {
-    $user=new UserManager();
+    $user=new oldUserManager();
     $deleteInfo=$user->deleteUserInfos($userId);
     twigRender('infosUser.html.twig','','','','');
 }
@@ -663,7 +671,7 @@ function deleteUserInfos($userId)
 function messages($userId)
 {
 
-    $user= new UserManager();
+    $user= new oldUserManager();
     $getUnreadMessages = $user->getUnreadMessages($userId);
     $getReadMessages = $user->getReadMessages($userId);
     $sentMessages=$user->sentMessages($userId);
@@ -681,7 +689,7 @@ function messages($userId)
  */
 function readUnreadMessages($messageId,$userId)
 {
-    $user= new UserManager();
+    $user= new oldUserManager();
    $readUnreadMessage =$user->readUnreadMessages($messageId,$userId);
 
 twigRender('readMessage.html.twig','mailContents',$readUnreadMessage,'','');
@@ -689,7 +697,7 @@ twigRender('readMessage.html.twig','mailContents',$readUnreadMessage,'','');
 
 function readArchivedMessages($messageId,$userId)
 {
-    $user= new UserManager();
+    $user= new oldUserManager();
     $readArchivedMessages =$user->readArchivedMessages($messageId,$userId);
 
     twigRender('readArchivedMessages.html.twig','archivedMessages',$readArchivedMessages,'','');
@@ -697,7 +705,7 @@ function readArchivedMessages($messageId,$userId)
 
 function sentMessages($messageId,$userId)
 {
-    $user= new UserManager();
+    $user= new oldUserManager();
     $sentMessages= $user->sentMessage($messageId,$userId);
 
     twigRender('sentMessages.html.twig','sentMessages',$sentMessages,'','');
@@ -709,7 +717,7 @@ function sentMessages($messageId,$userId)
 
 function deleteMessage($messageId)
 {
-    $user= new UserManager();
+    $user= new oldUserManager();
     $deleteMessage =$user->deleteMessage($messageId);
 
     header('Location:index.php?p=messages');
@@ -718,7 +726,7 @@ function deleteMessage($messageId)
 
 function sendMessageToWebmaster($expeditor,$receiver)
 {
-    $user= New UserManager();
+    $user= New oldUserManager();
     $sendMessage = $user->sendMail($expeditor, $receiver);
     $data= $user->getUserProfile($receiver);
 
@@ -792,7 +800,7 @@ function eraseUser($userId)
     }
 
 
-    $user= new UserManager();
+    $user= new oldUserManager();
 
     $getmail=$user->getMail($userId);
 
@@ -820,7 +828,7 @@ function eraseUser($userId)
 
 function archiveMessages($messageId,$userId)
 {
-    $user= new UserManager();
+    $user= new oldUserManager();
     $archiveMessages = $user->archiveMessages($messageId,$userId);
 
     header('Location:index.php?p=messages');

@@ -1,8 +1,8 @@
 <?php
 declare(strict_types=1);
-require_once 'model/UserManager.php';
+require_once 'model/old_UserManager.php';
 require_once 'twig.php';
-use model\UserManager;
+use model\oldUserManager;
 use model\User;
 
 listProfile();
@@ -10,7 +10,7 @@ listProfile();
 
 function listProfile()
 {
-    $user=new UserManager();
+    $user=new oldUserManager();
     //$userProfileNbx=$user->getUserProfileNbx();
 
     $data= $user->homeDisplay();

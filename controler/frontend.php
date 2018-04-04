@@ -1,22 +1,42 @@
 <?php
 declare(strict_types=1);
-
+/*
 require_once 'model/UserManager.php';
+require_once 'model/User.php';
+require_once 'model/Manager.php';
+require_once 'lib/Session.php';*/
+
+require_once 'resize2.php';
 require_once 'twig.php';
 require_once 'functions.php';
-require_once 'model/User.php';
-require_once 'resize2.php';
 require_once 'crop.php';
-require_once 'lib/Session.php';
 
-use model\UserManager;
-use model\User;
 
+//Autoloader_lib::register();
+
+function home()
+{
+
+
+    $manager= new \model\Manager();
+    $profils= $manager->getProfil();
+
+
+    twigRender('frontend/home.html.twig','userdata',$profils ,'','');
+}
+
+function signUp()
+{
+
+
+
+    twigRender('frontend/signUp.html.twig','session',$_SESSION,'','');
+}
 
 
 function homeUserFront($userId)
 {
-    $user = new UserManager();
+    $user = new oldUserManager();
     $data= $user->getUserProfile($userId);
     $infos=$user->getUserInfos($userId);
 
@@ -25,7 +45,7 @@ function homeUserFront($userId)
 
 function userGalerie($userId,$username)
 {
-    $user= new UserManager();
+    $user= new oldUserManager();
     $userGalerie= $user->frontUsergalerie($userId,$username);
 
     twigRender('frontend/userGalerie.html.twig','images',$userGalerie,'','');
@@ -33,10 +53,30 @@ function userGalerie($userId,$username)
 
 function get_registry()
 {
+    $hashPwd = password_hash($_POST['password'], PASSWORD_DEFAULT);
+    $JSON= json_encode(["ROLE_USER"]);
 
-    $user = new UserManager();
 
-    $newUser = $user->addUser();
+    $user = new \model\Projet5_user();
+    $manager= new \model\Manager();
+
+
+
+    $user
+        ->setGender($_POST['gender'])
+        ->setFirstName($_POST['first_name'])
+        ->setLastName($_POST['last_name'])
+        ->setUsername($_POST['username'])
+        ->setBirthday($_POST['birthday'])
+        ->setEmail($_POST['email'])
+        ->setPassword($hashPwd)
+        ->setRole($JSON);
+
+
+    $userManager= new \model\UserManager();
+    $addUser= $userManager->save($user);
+    $finalUpdate=$manager->newUserFinalUpdate($user);
+    $newUser=$userManager->read($user->getId());
 
 
 
@@ -54,7 +94,7 @@ function get_registry()
 <body>
 
 <p>
-    bonjour '.$newUser['first_name']. ' ! Bienvenue !  votre inscription est confirmé. Notez votre pseudo : '.$newUser['username']. '<br> Votre mot de passe est celui que vous avez tapé pour vous inscrire. Merci et à bientôt
+    bonjour '.$newUser->getFirstName(). ' ! Bienvenue !  votre inscription est confirmé. Notez votre pseudo : '.$newUser->getUsername(). '<br> Votre mot de passe est celui que vous avez tapé pour vous inscrire. Merci et à bientôt
 
 </p>
 
@@ -64,7 +104,7 @@ function get_registry()
 
 
 
-    if($newUser)
+    if($addUser)
     {
 
 
@@ -75,7 +115,7 @@ function get_registry()
         $message[]= 'Nous sommes navrés mais un erreur est survenue et votre inscription n\'a pas pu est prise en compte. vous êtes invitez à recommencer ultérieurement ';
     }
     session_destroy();
-       mail($newUser['email'],'Confirmation d\'incription','bonjour '.$newUser['first_name']. ' ! Bienvenue !  votre inscription est confirmé. Notez votre pseudo : '.$newUser['username']. '<br> Votre mot de passe est celui que vous avez tapé pour vous inscrire. Merci et à bientôt' );
+       mail($newUser->getEmail(),'Confirmation d\'incription','bonjour '.$newUser->getFirstName(). ' ! Bienvenue !  votre inscription est confirmé. Notez votre pseudo : '.$newUser->getUsername(). '<br> Votre mot de passe est celui que vous avez tapé pour vous inscrire. Merci et à bientôt' );
 
 
 
@@ -84,25 +124,13 @@ function get_registry()
 
 }
 
-function home()
-{
-    $user=new UserManager();
-    $usersProfilPictures=$user->getUserProfilePictures();
-
-    twigRender('frontend/home.html.twig','userdata',$usersProfilPictures ,'','');
-}
-
-function signUp()
-{
 
 
-    twigRender('frontend/signUp.html.twig','session',$_SESSION,'','');
-}
 
 function sendMessage($expeditor, $receiver)
 {
 
-    $user= New UserManager();
+    $user= New oldUserManager();
     $sendMessage = $user->sendMail($expeditor, $receiver);
 
 
