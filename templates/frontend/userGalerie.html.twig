@@ -1,0 +1,60 @@
+{% extends "frontend/homeUserFront.html.twig" %}
+
+
+{% block main %}
+     <span class="txt"></span>
+    <h1>la galerie de {{ images.0.username }} &nbsp;<a href="index.php?p=homeUserFront&amp;userId={{ images.0.id }}&amp;username={{ images.0.username }}"><i class="far fa-images fa-1x"></i></a></h1>
+        
+    <main role="main">
+
+        <div class="album py-5 bg-light">
+            <div class="container container-fluid">
+
+                <div class="row">
+
+                    {% for  avatar in images %}
+                        <div class="col-md-4">
+                            <div class="card mb-4 box-shadow">
+
+
+
+                                <img id="{{ avatar.id }}" class="card-img-top img-thumbnail"  src="{{ avatar.thumbnail }}" alt="Card image cap">
+
+
+                                <div class="card-body">
+                                   {# <p class="card-text ">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>#}
+                                    <div class="d-flex justify-content-center align-items-center>">
+                                        <div class="btn-group align-items-center> ">
+                                            <a href="index.php?p=frontGalerieViewer&amp;id={{ avatar.image_id }}&amp;username={{ avatar.username }}"> <button type="button" data-toggle="modal"  title="ouvrir photo" id="btn1" class="btn btn-xl btn-outline-secondary  profilButton">View</button></a>
+
+
+                                        </div>
+
+                                        <small class="text-muted"></small>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    {% endfor %}
+
+
+
+
+
+
+
+
+
+                </div>
+            </div>
+        </div>
+
+
+
+    </main>
+
+
+{% endblock main %}

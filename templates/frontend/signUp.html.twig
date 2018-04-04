@@ -1,0 +1,79 @@
+{% extends 'layout.html.twig' %}
+{%  import 'form.html.twig' as form %}
+
+{% block main %}
+
+
+
+    <section>
+        <div class="container">
+            <form class="form-horizontal" role="form" method="POST" action="index.php?p=register">
+                <div class="row">
+                    <div class="col-md-3"></div>
+                    <div class="col-md-6 text-center">
+                        <h2>Inscription</h2>
+                        <hr>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3 field-label-responsive">
+                        <label for="sexe">Je suis </label>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <div class="input-group mb-2 mr-sm-2 mb-sm-0">
+                                <div class="input-group-addon" style="width: 2.6rem"><i class="fa fa-venus-mars"></i></div>
+                                {{ form.radioInline('gender1','gender','une femme', 'une femme') }}
+                                {{ form.radioInline('gender2','gender','un homme', 'un homme') }}
+
+
+
+                            </div>
+                        </div>
+                    </div>
+
+
+
+
+                    <div class="col-md-3">
+                        <div class="form-control-feedback">
+                        <span class="text-danger align-middle">
+                            <!-- Put name validation error messages here -->
+                        </span>
+                        </div>
+                    </div>
+                </div>
+                {{ form.input('first_name', 'Prénom', 'Jane/Joe', {class: 'user', value:session.first_name   } ) }}
+                {{ form.input('last_name', 'Nom', 'Doe', {class: 'user', value:session.last_name } ) }}
+                {{ form.input('username', 'Pseudo', 'Roquet Belles oreilles', {class: 'sign-in', value:session.username } ) }}
+                {{ form.input('birthday', 'Date de naissance', '', {class: 'calendar', type: 'date',value:session.birthday } ) }}
+                {{ form.input('email', 'Votre email', 'you@example.com', {class: 'at', type: 'email',value:session.email } ) }}
+                {{ form.input('password', 'Mot de passe', 'Password', {class: 'key', type: 'password' } ) }}
+                {{ form.input('password2', 'Confirmation du Mot de passe', 'Password', {class: 'repeat', type: 'password' } ) }}
+
+
+
+                <div class="row">
+                    <div class="col-md-3"></div>
+                    <div class="col-md-6 text-center">
+                        <button type="submit" id="register" class="btn btn-success"><i class="fa fa-user-plus"></i> Register</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% endblock %}
