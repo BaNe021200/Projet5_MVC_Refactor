@@ -156,7 +156,7 @@ function homeUser()
     $userManager = new \model\UserManager();
     $isConnected = $userManager->read($_COOKIE['ID']);
 
-    if(($isConnected->getId()===$_COOKIE['ID']) && ($isConnected->getUsername()===$_COOKIE['username']))
+    if((strval($isConnected->getId())===$_COOKIE['ID']) && ($isConnected->getUsername()===$_COOKIE['username']))
     {
         $manager = New \model\Manager();
         $connectedSelf=$manager->isConnectedSelf($_COOKIE['ID']);
@@ -349,7 +349,9 @@ function uploadPicture($userId,$img)
 {
 
 
-    $user=new oldUserManager();
+    //$user=new oldUserManager();
+    $image = new \model\Projet5_images();
+    $imageManager = new \model\ImagesManager();
 
     $messages = [];
 
@@ -376,7 +378,13 @@ function uploadPicture($userId,$img)
 
                         //$destinationPath='upload/user/'.$file['name'];
                         $destinationPath ="users/img/user/".$_COOKIE['username'].'/img_00'.$img.'.jpg';
-                        $uploadimage= $user->addUserPicture($_COOKIE['ID'],$destinationPath);
+                        $image
+                            ->setUserId($_COOKIE['ID'])
+                            ->setDirname('users/img/user/'.$_COOKIE['username'])
+                            ->setFilename('img_00'.$img)
+                            ->setExtension('jpg');
+
+                        $uploadimage= $imageManager->save($image);
 
 
 
@@ -428,7 +436,15 @@ function uploadPicture($userId,$img)
 
 
                         $destinationPath ="users/img/user/".$_COOKIE['username'].'/img_00'.$img.'.jpg';
-                        $uploadimage= $user->addUserPicture($_COOKIE['ID'],$destinationPath);
+                        $image
+                            ->setUserId(intval($_COOKIE['ID']))
+                            ->setDirname('users/img/user/'.$_COOKIE['username'])
+                            ->setFilename('img_00'.$img)
+                            ->setExtension('jpg');
+
+                        $uploadimage= $imageManager->save($image);
+
+
 
 
                         $temporaryPath = $file['tmp_name'];
@@ -462,14 +478,15 @@ function uploadPicture($userId,$img)
 
 
     twigRender('success.html.twig','message', $messages,'','');
-    @$imageId= $uploadimage;
+
+    @$imageId= strval($uploadimage->getId());
     @thumbNails2(525,700,$_COOKIE['ID'],$imageId);
     @resizeByHeight();
     @cropImages();
     @imageProfile();
-
+    die;
     $cropFiles = glob('users/img/user/'.$_COOKIE['username'].'/crop/*.jpg');
-     $cropFiles = $user->addCropFiles($userId,$img);
+    $cropFiles = $user->addCropFiles($userId,$img);
 
 
 }

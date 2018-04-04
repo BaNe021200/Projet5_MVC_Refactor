@@ -79,9 +79,10 @@ class Manager
     {
         $this->pdostatement= $this->pdo->prepare('
         UPDATE projet5_user 
-        SET connected_self = :connected;
-        WHERE id=:id;');
+        SET connected_self = :connected
+        WHERE id=:id');
         $this->pdostatement->bindValue(':id',$id,PDO::PARAM_INT);
+        $this->pdostatement->bindValue(':connected',1,PDO::PARAM_INT);
         return $this->pdostatement->execute();
     }
 

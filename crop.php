@@ -134,13 +134,13 @@ function cropcenter($image){
 }*/
 
 function thumbNails2($width,$height,$userId,$photoId){
-    $user= new oldUserManager();
-    $images=$user->getPhoto2Thumb($userId,$photoId);
-
+    //$user= new oldUserManager();
+    //$images=$user->getPhoto2Thumb($userId,$photoId);
+    $imageManager = new \model\ImagesManager();
+    $images = $imageManager->read($photoId);
 
     if (!file_exists('users/img/user/'.$_COOKIE['username'].'/thumbnails'))
     { newFolderThumbnails();
-
 
 
 
@@ -164,14 +164,24 @@ function thumbNails2($width,$height,$userId,$photoId){
             // On sauvegarde le tout
                 $imageThumbnail= imagejpeg($thumb, 'users/img/user/'.$_COOKIE['username'].'/thumbnails/'.$fileName.'-thumb.jpg');
 
-        $saveThumbnail=$user->addThumbnails($userId,$photoId,$dirname,$fileName);
+                    $thumbnail = new \model\Projet5_thumbnails();
+
+                    $thumbnail
+                        ->setUserId(intval($_COOKIE['ID']))
+                        ->setImageId($photoId)
+                        ->setThumbnail('users/img/user/' . $_COOKIE['username'] . '/thumbnails/' . $fileName . '-thumb.jpg');
+
+                    $thumbnailManager= new \model\ThumbnailsManager();
+                    $addThumbnails = $thumbnailManager->create($thumbnail);
+
+        //$saveThumbnail=$user->addThumbnails($userId,$photoId,$dirname,$fileName);
                 }
     }
     else {
         //$images=glob('users/img/user/'.$_COOKIE['username'].'/*.jpg');
 
 
-        $src = $images[0]['dirname'] . '/' . $images[0]['filename'] . '.' . $images[0]['extension'];
+        $src = $images->getDirname() . '/' . $images->getFilename() . '.' . $images->getExtension();
         $infoName = pathinfo($src);
         $dirname = $infoName['dirname'];
         $fileName = $infoName['filename'];
@@ -207,7 +217,18 @@ function thumbNails2($width,$height,$userId,$photoId){
                 // On sauvegarde le tout
                 $imageThumbnail = imagejpeg($thumb, 'users/img/user/' . $_COOKIE['username'] . '/thumbnails/' . $fileName . '-thumb.jpg');
 
-                $saveThumbnail = $user->addThumbnails($userId, $photoId, $dirname, $fileName);
+                $thumbnail = new \model\Projet5_thumbnails();
+
+                $thumbnail
+                    ->setUserId(intval($_COOKIE['ID']))
+                    ->setImageId(intval($photoId))
+                    ->setThumbnail('users/img/user/' . $_COOKIE['username'] . '/thumbnails/' . $fileName . '-thumb.jpg');
+                    //var_dump($thumbnail);die;
+                $thumbnailManager= new \model\ThumbnailsManager();
+                $addThumbnails = $thumbnailManager->create($thumbnail);
+
+
+                //$saveThumbnail = $user->addThumbnails($userId, $photoId, $dirname, $fileName);
             }
     }
 }

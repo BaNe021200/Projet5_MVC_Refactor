@@ -36,7 +36,7 @@ class ImagesManager
 
     /**
      * Insert un objet Projet5_image dans la BDD et met à jour l'objet passé en argument en lui attribuant un identifiant (id)
-     * @param Projet5_images $image objet de type Contact passé par référence
+     * @param Projet5_images $image objet de type Projet5_images passé par référence
      * @return bool true si l'objet a été inséré; false si une erreur survient
      */
     private function create(Projet5_images &$image){
@@ -55,7 +55,7 @@ class ImagesManager
         else{
             $id=$this->pdo->lastInsertId();
             $image= $this->read($id);
-            return true;
+            return $image; var_dump($image);die;
 
 
         }
