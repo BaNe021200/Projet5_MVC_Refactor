@@ -59,14 +59,24 @@ class ThumbnailsManager
 
     }
 
-    private function read($userId)
+    public function read($userId)
     {
         $this->pdostatement= $this->pdo->prepare('SELECT * FROM projet5_thumbnails WHERE user_id= :userId');
         //liaison paramètres
         $this->pdostatement->bindValue(':userId',$userId,PDO::PARAM_INT);
         //Execution de la requête
         $executeIsOk= $this->pdostatement->execute();
-        if($executeIsOk){
+        $thumbnails = [];
+        while ($thumbnail= $this->pdostatement->fetchObject("model\Projet5_thumbnails")){
+            $thumbnails[]= $thumbnail;
+        }
+
+        return $thumbnails;
+
+
+
+
+        /*if($executeIsOk){
             $thumbnail = $this->pdostatement->fetchObject('model\Projet5_thumbnails');
             if($thumbnail===false){
                 return null;
@@ -76,7 +86,7 @@ class ThumbnailsManager
             }
         }else{
             return false;
-        }
+        }*/
     }
 
     /**

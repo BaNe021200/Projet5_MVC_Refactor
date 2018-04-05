@@ -522,7 +522,7 @@ function recropped($userId,$img){
          $imageManager = new \model\ImagesManager();
         $addCropCenterFiles = $imageManager->create($imageCropcenter);
 
-        var_dump($imageCropcenter);
+
 
         //$cropCenterFile = $user->addCropCenterFiles($userId,$img);
 
@@ -560,11 +560,8 @@ function croppedChoice($userId,$img){
 
 function getUserImages($userId)
 {
-
-   /* $folderThumbnails = glob('users/img/user/'.$_COOKIE['username'].'/thumbnails/*.jpg');
-    $folder=glob('users/img/user/'.$_COOKIE['username'].'/*.jpg');*/
-    $user=new oldUserManager();
-    $folder=$user->getThumbnails($userId);
+      $thumbnailManager= new \model\ThumbnailsManager();
+      $folder=$thumbnailManager->read($userId);
 
 twigRender('galerie3.html.twig','images',$folder,'','');
     //require_once 'templates/photo.php';
@@ -652,8 +649,8 @@ function deleteImage($userId,$imageId)
 
 function viewerGalerie($imageId)
 {
-    $user=new oldUserManager();
-    $view = $user->getUserView($imageId);
+    $imageManager=new \model\ImagesManager();
+    $view = $imageManager->read($imageId);
 
     twigRender('galerieViewer.html.twig','view',$view,'','');
 }

@@ -2,12 +2,11 @@
 declare(strict_types=1);
 session_start();
 require_once 'vendor/autoload.php';
-require_once 'model/UserManager.php';
+require_once 'model/Autoloader.php';
 require_once 'controler/backend.php';
 require_once 'lib/Session.php';
-//require_once 'vendor/twig/twig/lib/Twig/Extension/Session.php';
-use model\oldUserManager;
-
+use model\Autoloader;
+Autoloader::register();
 
 
 

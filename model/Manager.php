@@ -63,6 +63,40 @@ class Manager
 
     }
 
+    public function getUserProfilePicture($currentPage,$perPage)
+    {
+        $this->pdostatement=$this->pdo->query('
+        
+        SELECT projet5_images.user_id,filename, projet5_user.id,username,user_age,registry_date,connected,projet5_infosuser.city
+            FROM projet5_images
+            JOIN projet5_user
+            ON projet5_images.user_id = projet5_user.id
+            LEFT JOIN projet5_infosuser
+            ON projet5_images.user_id=projet5_infosuser.user_id
+            WHERE projet5_images.filename="img-userProfil"
+
+            AND projet5_user.connected_self IS NULL
+            ORDER BY registry_date DESC LIMIT '.(($currentPage-1)*$perPage). ','.$perPage);
+
+            $profils=[];
+            while ($profil=$this->pdostatement->fetchObject()){
+                $profils[]=$profil;
+
+            }
+
+            return $profils;
+
+
+
+    }
+
+
+
+
+
+
+
+
     public function newUserFinalUpdate(Projet5_user $user)
     {
 
@@ -97,13 +131,6 @@ class Manager
         return $this->pdostatement->execute();
     }
 
-
-
-
-
-
-
-
     public function readUser($item,$Queryitem){
 
 
@@ -131,5 +158,21 @@ class Manager
 
 
     }
+
+    public function homeDisplay()
+    {
+       $this->pdostatement=$this->pdo->query('
+       SELECT COUNT(filename) AS nbUsers
+FROM projet5_images WHERE filename="img-userProfil";');
+
+       $data= $this->pdostatement->execute();
+       $data= $this->pdostatement->fetchObject();
+       return $data;
+    }
+
+
+
+
+
 
 }

@@ -1,20 +1,21 @@
 <?php
 declare(strict_types=1);
-require_once 'model/old_UserManager.php';
 require_once 'twig.php';
-use model\oldUserManager;
-use model\User;
+require_once 'model/Autoloader.php';
+
+use model\Autoloader;
+Autoloader::register();
 
 listProfile();
 
 
 function listProfile()
 {
-    $user=new oldUserManager();
+    $user=new \model\Manager();
     //$userProfileNbx=$user->getUserProfileNbx();
 
     $data= $user->homeDisplay();
-    $nbUsers=$data['nbUsers'];
+    $nbUsers=$data->nbUsers;
 
     $perPage=6;
     $nbPage= ceil($nbUsers/$perPage);

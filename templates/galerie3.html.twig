@@ -6,6 +6,11 @@
 
 {% endblock %}
 
+{% block TEST %}
+
+
+
+{% endblock TEST %}
 
 
 
@@ -37,7 +42,7 @@
                                 {#<p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>#}
                                 <div class="d-flex justify-content-center align-items-center">
                                     <div class="btn-group">
-                                        <a href="index.php?p=viewerGalerie&amp;id={{ avatar.image_id }}"> <button type="button" data-toggle="modal"  title="ouvrir photo" id="btn1" class="btn btn-xl btn-outline-secondary">View</button></a>
+                                        <a href="index.php?p=viewerGalerie&amp;id={{ avatar.getImageId }}"> <button type="button" data-toggle="modal"  title="ouvrir photo" id="btn1" class="btn btn-xl btn-outline-secondary">View</button></a>
 
 
                                     </div>
