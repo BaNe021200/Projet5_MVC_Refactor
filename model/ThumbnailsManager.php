@@ -99,6 +99,16 @@ class ThumbnailsManager
 
     }
 
+    public function deleteThumbnail($thumbnail2delete)
+    {
+        $this->pdostatement = $this->pdo->prepare('
+        DELETE FROM projet5_thumbnails WHERE user_id = :userId AND thumbnail= :thumbnail');
+        $this->pdostatement->bindValue(':userId', $_COOKIE['ID'],PDO::PARAM_INT);
+        $this->pdostatement->bindValue(':thumbnail', $thumbnail2delete,PDO::PARAM_STR);
+        return $this->pdostatement->execute();
+    }
+
+
 
 
 

@@ -39,8 +39,8 @@ class ImagesManager
      * @param Projet5_images $image objet de type Projet5_images passé par référence
      * @return bool true si l'objet a été inséré; false si une erreur survient
      */
-    private function create(Projet5_images &$image){
-        $this->pdostatement=$this->pdo->prepare('INSERT INTO projet5_images VALUES (NULL,:user_id, :dirname,:filename, :ext)');
+    public function create(Projet5_images &$image){
+        $this->pdostatement=$this->pdo->prepare('REPLACE INTO projet5_images VALUES (NULL,:user_id, :dirname,:filename, :ext)');
         //liaison des paramètres
         $this->pdostatement->bindValue(':user_id',$image->getUserId(),PDO::PARAM_STR);
         $this->pdostatement->bindValue(':dirname',$image->getDirname(),PDO::PARAM_STR);
@@ -55,7 +55,7 @@ class ImagesManager
         else{
             $id=$this->pdo->lastInsertId();
             $image= $this->read($id);
-            return $image; var_dump($image);die;
+            return $image; var_dump($image);
 
 
         }
@@ -129,16 +129,32 @@ class ImagesManager
 
     /**
      * Supprime un objet stocké en base de données
-     * @param Projet5_images $image objet de type Contact
+     * @param $img int identifiant de l'image
      * @return bool true en cas de succès et false en cas d'erreur
      */
-    public function delete(Projet5_images $image){
+    public function delete($img){
 
         $this->pdostatement=$this->pdo->prepare('DELETE FROM projet5_images WHERE id= :id LIMIT 1');
-        $this->pdostatement->bindValue(':id',$image->getId(), PDO::PARAM_INT);
+        $this->pdostatement->bindValue(':id',$img, PDO::PARAM_INT);
         //execution de la requête
         return $this->pdostatement->execute();
     }
+
+    public function deletePicture($picture2delete)
+    {
+        $this->pdostatement = $this->pdo->prepare('
+        DELETE FROM projet5_images WHERE user_id = :userId AND filename= :filename');
+        $this->pdostatement->bindValue(':userId', $_COOKIE['ID'],PDO::PARAM_INT);
+        $this->pdostatement->bindValue(':filename', $picture2delete,PDO::PARAM_STR);
+        return $this->pdostatement->execute();
+    }
+
+
+
+
+
+
+
 
 
     /**
@@ -147,21 +163,7 @@ class ImagesManager
      * @param Projet5_images $image
      * @return bool
      */
-    public function save(Projet5_images &$image){
 
-        //il faut utiliser la méthode create lorsque l'objet est nouveau et la methode update si l'objet n'est pas nouveau
-        //pour le savoir  ->
-        //un nouvel objet n'a pas d'id
-        //un objet issu de la base de donnée a un id
-
-        if(is_null($image->getId())){
-            return $this->create($image);
-        }
-        else{
-            return $this->update($image);
-
-        }
-    }
 
 
 

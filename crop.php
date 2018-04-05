@@ -25,6 +25,17 @@ function cropImages(){
             $im2 = imagecrop($image, ['x' => 0, 'y' => 0, 'width' => $size, 'height' => $size]);
             if ($im2 !== FALSE) {
                 imagejpeg($im2, 'users/img/user/'.$_COOKIE['username'].'/crop/'.$cropName.'-cropped.jpg');
+
+                $cropFile = new \model\Projet5_images();
+                $cropFile
+                    ->setUserId(intval($_COOKIE['ID']))
+                    ->setDirname('users/img/user/'.$_COOKIE['username'].'/crop')
+                    ->setFilename($cropName.'-cropped')
+                    ->setExtension('jpg');
+                $cropManager=new \model\ImagesManager();
+                 $addCroppedFile = $cropManager->create($cropFile);
+
+
             }
         }
     }
@@ -42,6 +53,18 @@ function cropImages(){
             $im2 = imagecrop($image, ['x' => 0, 'y' => 0, 'width' => $size, 'height' => $size]);
             if ($im2 !== FALSE) {
                 imagejpeg($im2, 'users/img/user/'.$_COOKIE['username'].'/crop/'.$cropName.'-cropped.jpg');
+                $cropFile = new \model\Projet5_images();
+                $cropFile
+                    ->setUserId(intval($_COOKIE['ID']))
+                    ->setDirname('users/img/user/'.$_COOKIE['username'].'/crop')
+                    ->setFilename($cropName.'-cropped')
+                    ->setExtension('jpg');
+                $cropManager=new \model\ImagesManager();
+                $addCroppedFile = $cropManager->create($cropFile);
+
+
+
+
             }
         }
     }
@@ -145,7 +168,7 @@ function thumbNails2($width,$height,$userId,$photoId){
 
 
 
-                $src= $images[0]['dirname'].'/'.$images[0]['filename'].'.'.$images[0]['extension'];
+                $src = $images->getDirname() . '/' . $images->getFilename() . '.' . $images->getExtension();
                 $infoName= pathinfo($src);
                 $dirname=$infoName['dirname'];
                 $fileName=$infoName['filename'];
@@ -168,7 +191,7 @@ function thumbNails2($width,$height,$userId,$photoId){
 
                     $thumbnail
                         ->setUserId(intval($_COOKIE['ID']))
-                        ->setImageId($photoId)
+                        ->setImageId(intval($photoId))
                         ->setThumbnail('users/img/user/' . $_COOKIE['username'] . '/thumbnails/' . $fileName . '-thumb.jpg');
 
                     $thumbnailManager= new \model\ThumbnailsManager();

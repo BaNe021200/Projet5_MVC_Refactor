@@ -86,6 +86,17 @@ class Manager
         return $this->pdostatement->execute();
     }
 
+    public function disconnectUser($id)
+    {
+        $this->pdostatement= $this->pdo->prepare('
+        UPDATE projet5_user 
+        SET connected_self = :connected
+        WHERE id=:id');
+        $this->pdostatement->bindValue(':id',$id,PDO::PARAM_INT);
+        $this->pdostatement->bindValue(':connected',NULL,PDO::PARAM_INT);
+        return $this->pdostatement->execute();
+    }
+
 
 
 

@@ -246,7 +246,8 @@ function homeUser()
 }*/
 
 function imageProfile()
-{    $user = new oldUserManager();
+{
+    $imageManager = new \model\ImagesManager();
     if (!file_exists('users/img/user/'.$_COOKIE['username'].'/profilPicture')) {
         newFolderProfilPicture();
         if (file_exists("users/img/user/" . $_COOKIE['username'] . "/crop/img_001-cropped-center.jpg")) {
@@ -256,8 +257,9 @@ function imageProfile()
         }
     }
     else {
-        $deleteimageProfile=$user->deleteUserProfilPicture();
-        $deleteimageProfile=$user->deleteUserProfilPicture();
+        $deleteimageProfile=$imageManager->deletePicture("img-userProfil");
+        $deleteimageProfile=$imageManager->deletePicture("img-userProfil");
+
         if (file_exists("users/img/user/" . $_COOKIE['username'] . "/crop/img_001-cropped-center.jpg")) {
             copy("users/img/user/" . $_COOKIE['username'] . "/crop/img_001-cropped-center.jpg", 'users/img/user/'.$_COOKIE['username'].'/profilPicture/img-userProfil.jpg');
         } else {
@@ -265,7 +267,16 @@ function imageProfile()
         }
     }
 
-    $imageProfile = $user->addProfilPicture();
+    $imageProfil= new \model\Projet5_images();
+     $imageProfil
+         ->setUserId(intval($_COOKIE['ID']))
+         ->setDirname('users/img/user/'.$_COOKIE['username'].'/profilPicture')
+         ->setFilename('img-userProfil')
+         ->setExtension('jpg');
+
+     $addProfilPicture = $imageManager->create($imageProfil);
+
+    //$imageProfile = $user->addProfilPicture();
 
 }
 
@@ -332,8 +343,8 @@ function authentificationConnexion()
 
 function disconnectUser()
 {
-    $user=new oldUserManager();
-    @$disconnectUser =$user->disconnectUser($_COOKIE['ID']);
+    $manager= new \model\Manager();
+    @$disconnectUser = $manager->disconnectUser($_COOKIE['ID']);
     session_destroy();
     setcookie("ID","", time()- 60);
     setcookie("username","", time()- 60);
@@ -379,12 +390,12 @@ function uploadPicture($userId,$img)
                         //$destinationPath='upload/user/'.$file['name'];
                         $destinationPath ="users/img/user/".$_COOKIE['username'].'/img_00'.$img.'.jpg';
                         $image
-                            ->setUserId($_COOKIE['ID'])
+                            ->setUserId(intval($_COOKIE['ID']))
                             ->setDirname('users/img/user/'.$_COOKIE['username'])
                             ->setFilename('img_00'.$img)
                             ->setExtension('jpg');
 
-                        $uploadimage= $imageManager->save($image);
+                        $uploadimage= $imageManager->create($image);
 
 
 
@@ -442,7 +453,7 @@ function uploadPicture($userId,$img)
                             ->setFilename('img_00'.$img)
                             ->setExtension('jpg');
 
-                        $uploadimage= $imageManager->save($image);
+                        $uploadimage= $imageManager->create($image);
 
 
 
@@ -484,9 +495,7 @@ function uploadPicture($userId,$img)
     @resizeByHeight();
     @cropImages();
     @imageProfile();
-    die;
-    $cropFiles = glob('users/img/user/'.$_COOKIE['username'].'/crop/*.jpg');
-    $cropFiles = $user->addCropFiles($userId,$img);
+
 
 
 }
@@ -494,18 +503,30 @@ function uploadPicture($userId,$img)
 function recropped($userId,$img){
 
 
-    $user=new oldUserManager();
+    //$user=new oldUserManager();
     $folder="users/img/user/".$_COOKIE['username'].'/img_00'.$img.'.jpg';
     $file2crop="users/img/user/".$_COOKIE['username'].'/crop/img_00'.$img.'-cropped.jpg';
     if(file_exists($folder))
     {
-        $folderpart=pathinfo($folder);
-        $folderfilename=$folderpart['filename'];
+        //$folderpart=pathinfo($folder);
+        //$folderfilename=$folderpart['filename'];
         cropcenter($folder);
         $cropCenterFile='users/img/user/'.$_COOKIE['username'].'/crop/img_00'.$img.'-crop-center.jpg';
-        $cropCenterFile = $user->addCropCenterFiles($userId,$img);
 
-        twigRender('recroppedView.html.twig','recrop',$cropCenterFile,'img2crop',$file2crop);
+        $imageCropcenter= new \model\Projet5_images();
+         $imageCropcenter
+             ->setUserId(intval($_COOKIE['ID']))
+             ->setDirname('users/img/user/'.$_COOKIE['username'].'/crop')
+             ->setFilename('img_001-cropped-center')
+             ->setExtension('jpg');
+         $imageManager = new \model\ImagesManager();
+        $addCropCenterFiles = $imageManager->create($imageCropcenter);
+
+        var_dump($imageCropcenter);
+
+        //$cropCenterFile = $user->addCropCenterFiles($userId,$img);
+
+        twigRender('recroppedView.html.twig','recrop',$imageCropcenter,'img2crop',$file2crop);
     }
     else
     {
@@ -517,10 +538,10 @@ function recropped($userId,$img){
 
 function croppedChoice($userId,$img){
 
-       $user= new oldUserManager();
-    $src="users/img/user/".$_COOKIE['username']."/crop/img_001-cropped-center.jpg";
 
-    $croppedFile2Delete=$user->deleteImageCroppedCenter($userId,$img);
+    $src="users/img/user/".$_COOKIE['username']."/crop/img_001-cropped-center.jpg";
+    $imageManager = new \model\ImagesManager();
+    $deleteImageCroppedCenter= $imageManager->delete($img);
     if(file_exists($src))
     {
 
@@ -572,13 +593,19 @@ function pathInfosuserImages()
 
 function deleteImage($userId,$imageId)
 {
-    //var_dump($imageId);die;
-    $user= new oldUserManager();
-    $imageDeleted=$user->deleteImage($userId,$imageId);
+    $imageManager= new \model\ImagesManager();
+    $thumbnailManager= new \model\ThumbnailsManager();
+
+    $deleteimage= $imageManager->deletePicture('img_00'.$imageId);
+    $deleteCropped = $imageManager->deletePicture('img_00'.$imageId.'-cropped');
+    $deleteCroppedCenter = $imageManager->deletePicture('img_00'.$imageId.'-cropped-center');
+    $deleteThumbnail = $thumbnailManager->deleteThumbnail('users/img/user/'.$_COOKIE['username'].'/thumbnails/img_00'.$imageId.'-thumb.jpg');
+    //$imageManger= new \model\ImagesManager();
+    //$imageDeleted=$user->deleteImage($userId,$imageId);
     if($imageId==='1')
     {
 
-        $deleteProfilPicture=$user->deleteUserProfilPicture();
+        $deleteProfilPicture=$imageManager->deletePicture("img-userProfil");
         $folderThumbnails="users/img/user/".$_COOKIE['username'].'/thumbnails/img_00'.$imageId.'-thumb.jpg';
         $folderProfilPicture='users/img/user/'.$_COOKIE['username'].'/profilPicture/img-userProfil.jpg';
         $folderCroppedCenterToDelete = "users/img/user/".$_COOKIE['username'].'/crop/img_00'.$imageId.'-cropped-center.jpg';
