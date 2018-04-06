@@ -36,32 +36,7 @@ class Manager
 
     }
 
-    public function getProfil()
-    {
-        $this->pdostatement=$this->pdo->query('
-        
-        SELECT projet5_images.user_id,filename, projet5_user.id,username,user_age,registry_date,connected,projet5_infosuser.city
-            FROM projet5_images
-            JOIN projet5_user
-            ON projet5_images.user_id = projet5_user.id
-            LEFT JOIN projet5_infosuser
-            ON projet5_images.user_id=projet5_infosuser.user_id
-            WHERE projet5_images.filename="img-userProfil"
 
-            AND projet5_user.connected_self IS NULL
-            ORDER BY registry_date DESC LIMIT 0,6');
-
-
-
-        $profils=[];
-        while ($profil=$this->pdostatement->fetchObject()){
-            $profils[]=$profil;
-
-        }
-
-        return $profils;
-
-    }
 
     public function getUserProfilePicture($currentPage,$perPage)
     {
@@ -131,6 +106,12 @@ class Manager
         return $this->pdostatement->execute();
     }
 
+    /**
+     * @param $item exemple  valeur de l'item $_Post['username']
+     * @param $Queryitem  nom de la colone dans la table exemple "username"
+     * @return bool|mixed|null
+     *
+     */
     public function readUser($item,$Queryitem){
 
 

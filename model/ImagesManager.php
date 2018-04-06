@@ -8,8 +8,7 @@
 
 namespace model;
 
-require_once 'model/Projet5_images.php';
-use model\Projet5_images;
+
 use PDO;
 class ImagesManager
 {
@@ -71,10 +70,10 @@ class ImagesManager
      * @return bool|Contact|Null false si une erreur survient, un objet si un correspondance est trouvée,
      * Null s'il n'y aucune correspondance
      */
-    public function read($id){
-        $this->pdostatement= $this->pdo->prepare('SELECT * FROM projet5_images WHERE id= :id');
+    public function read($userId){
+        $this->pdostatement= $this->pdo->prepare('SELECT * FROM projet5_images WHERE user_id= :userId');
         //liaison paramètres
-        $this->pdostatement->bindValue(':id',$id,PDO::PARAM_INT);
+        $this->pdostatement->bindValue(':userId',$userId,PDO::PARAM_INT);
         //Execution de la requête
         $executeIsOk= $this->pdostatement->execute();
         if($executeIsOk){

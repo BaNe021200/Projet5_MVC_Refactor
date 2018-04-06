@@ -7,8 +7,7 @@
  */
 
 namespace model;
-require_once 'model/Projet5_thumbnails.php';
-use model\Projet5_thumbnails;
+
 use PDO;
 
 class ThumbnailsManager

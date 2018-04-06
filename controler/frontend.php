@@ -18,8 +18,8 @@ function home()
 {
 
 
-    $manager= new \model\Manager();
-    $profils= $manager->getProfil();
+    $userManager= new \model\UserManager();
+    $profils= $userManager->getProfils();
 
 
     twigRender('frontend/home.html.twig','userdata',$profils ,'','');
@@ -36,9 +36,10 @@ function signUp()
 
 function homeUserFront($userId)
 {
-    $user = new oldUserManager();
-    $data= $user->getUserProfile($userId);
-    $infos=$user->getUserInfos($userId);
+    $userManager= new \model\UserManager();
+    $InfosManager= new \model\InfosuserManager();
+    $data= $userManager->getProfil($userId);
+    $infos=$InfosManager->read($userId);
 
     twigRender('frontend/homeUserFront.html.twig','data',$data,'userInfos',$infos);
 }

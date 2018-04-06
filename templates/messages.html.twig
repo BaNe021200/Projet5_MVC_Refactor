@@ -12,11 +12,6 @@
 {% block TEST %}
 
 
-
-
-
-
-
 {% endblock TEST %}
 
 
@@ -78,22 +73,22 @@
                             <tbody>
 
 
-                                {% for message in messages %}
+                                {% for unSeenMessage in unSeenMessages %}
                                     <tr>
-                                        <td scope="row"><img src="{{ message.dirname }}/{{ message.filename }}.{{ message.extension }}" class="mailAvatar" width="50" height="50"></td>
-                                        <td>De : <a href="index.php?p=homeUserFront&amp;userId={{ message.expeditor }}">{{ message.username }}</a></td>
-                                        <td ><a title="lire le message de {{ message.username }}" href="index.php?p=readMessage&amp;messageId={{ message.mp_id }}"  >{{ message.title }}</a></td>
-                                        <td>{{ message.message |truncate}}</td>
-                                        <td>{{ message.time_date_fr }}</td>
-                                        <td><a class="linkColorArchived" href="index.php?p=archiveMessages&amp;messageId={{ message.mp_id }}"><i title="archiver le message" class="fas fa-archive"></i></a></td>
+                                        <td scope="row"><img src="{{ unSeenMessage.dirname }}/{{ unSeenMessage.filename }}.{{ unSeenMessage.extension }}" class="mailAvatar" width="50" height="50"></td>
+                                        <td>De : <a href="index.php?p=homeUserFront&amp;userId={{ unSeenMessage.id }}">{{ unSeenMessage.username }}</a></td>
+                                        <td ><a title="lire le message de {{ unSeenMessage.username }}" href="index.php?p=readMessage&amp;messageId={{unSeenMessage.mp_id }}"  >{{ unSeenMessage.title }}</a></td>
+                                        <td>{{ unSeenMessage.message |truncate}}</td>
+                                        <td>{{ unSeenMessage.time_date_fr }}</td>
+                                        <td><a class="linkColorArchived" href="index.php?p=archiveMessages&amp;messageId={{ unSeenMessage.mp_id }}"><i title="archiver le message" class="fas fa-archive"></i></a></td>
                                         <td>
-                                            <div style="color: red"><i data-toggle="modal" data-target="#myModalDeleteUnreadMessage&amp;messageId={{ message.mp_id }}" data-whatever="{{ message.username }}" class="fas fa-times" title="effacer le message"></i></div></td>
+                                            <div style="color: red"><i data-toggle="modal" data-target="#myModalDeleteUnreadMessage&amp;messageId={{ unSeenMessage.mp_id }}" data-whatever="{{ unSeenMessage.username }}" class="fas fa-times" title="effacer le message"></i></div></td>
 
 
 
                                      </tr>
 
-                                    <div class="modal fade" id="myModalDeleteUnreadMessage&amp;messageId={{ message.mp_id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal fade" id="myModalDeleteUnreadMessage&amp;messageId={{ unSeenMessage.mp_id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                         <div class="modal-dialog" role="document">
                                             <div class="modal-content">
                                                 <div class="modal-header">
@@ -103,11 +98,11 @@
                                                     </button>
                                                 </div>
                                                 <div class="modal-body">
-                                                    <p>Vous êtes sur point de supprimer le message {{ message.title }} de {{ message.username }}...continuer ?</p>
+                                                    <p>Vous êtes sur point de supprimer le message {{ unSeenMessage.title }} de {{ unSeenMessage.username }}...continuer ?</p>
                                                 </div>
                                                 <div class="modal-footer">
                                                     <button type="button"  class="btn btn-primary" data-dismiss="modal">Annuler</button>
-                                                    <a href="index.php?p=deleteMessage&amp;messageId={{ message.mp_id }}"><button type="button" class="btn btn-danger">Supprimer</button></a>
+                                                    <a href="index.php?p=deleteMessage&amp;messageId={{ unSeenMessage.mp_id }}"><button type="button" class="btn btn-danger">Supprimer</button></a>
                                                 </div>
                                             </div>
                                         </div>
@@ -159,10 +154,10 @@
                                 <tr>
                                     <td scope="row"><img src="{{ sentMessage.dirname }}/{{ sentMessage.filename }}.{{ sentMessage.extension }}" class="mailAvatar" width="50" height="50"></td>
                                     <td><a href="index.php?p=homeUserFront&amp;userId={{ sentMessage.receiver }}">{{ sentMessage.username }}</a></td>
-                                    <td ><a title="lire le message de {{ sentMessage.username }}" href="index.php?p=sentMessages&amp;messageId={{ sentMessage.mp_id }}"  >{{ sentMessage.title }}</a></td>
+                                    <td ><a title="lire le message envoyé à {{ sentMessage.username }}" href="index.php?p=sentMessages&amp;messageId={{ sentMessage.mp_id }}"  >{{ sentMessage.title }}</a></td>
                                     <td>{{ sentMessage.message |truncate}}</td>
                                     <td>{{ sentMessage.time_date_fr }}</td>
-                                    <td><a class="linkColorArchived" href="index.php?p=archiveMessages&amp;messageId={{ sentMessage.mp_id }}"><i title="archiver le message" class="fas fa-archive"></i></a></td>
+
                                     <td>
                                         <div style="color: red"><i data-toggle="modal" data-target="#myModalDeleteUnreadMessage&amp;messageId={{ sentMessage.mp_id }}" data-whatever="{{ sentMessage.username }}" class="fas fa-times" title="effacer le message"></i></div></td>
 

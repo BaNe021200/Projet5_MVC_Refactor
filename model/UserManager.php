@@ -8,7 +8,7 @@
 
 namespace model;
 use PDO;
-Use model\Projet5_user;
+
 
 
 class UserManager
@@ -121,12 +121,6 @@ class UserManager
         }
     }
 
-
-
-
-
-
-
     /**
      * Récupère tous les objets Projet5_user de la BDD
      *
@@ -205,7 +199,59 @@ class UserManager
         }
     }
 
+    public function getProfils()
+    {
+        $this->pdostatement=$this->pdo->query('
+        
+        SELECT projet5_images.user_id,filename, projet5_user.id,username,user_age,registry_date,connected,projet5_infosuser.city
+            FROM projet5_images
+            JOIN projet5_user
+            ON projet5_images.user_id = projet5_user.id
+            LEFT JOIN projet5_infosuser
+            ON projet5_images.user_id=projet5_infosuser.user_id
+            WHERE projet5_images.filename="img-userProfil"
 
+            AND projet5_user.connected_self IS NULL
+            ORDER BY registry_date DESC LIMIT 0,6');
+
+
+
+        $profils=[];
+        while ($profil=$this->pdostatement->fetchObject()){
+            $profils[]=$profil;
+
+        }
+
+        return $profils;
+
+    }
+
+    public function getProfil($userId)
+    {
+        $this->pdostatement=$this->pdo->prepare('
+        SELECT projet5_images.dirname,filename,extension, projet5_user.id,username,gender,user_age
+        FROM projet5_images
+        INNER JOIN projet5_user
+        ON projet5_images.user_id = projet5_user.id
+        WHERE user_id = :userId AND filename=:filename');
+        $this->pdostatement->bindValue(':userId',$userId,PDO::PARAM_INT);
+        $this->pdostatement->bindValue(':filename',"img-userProfil",PDO::PARAM_STR);
+
+        $executeIsOk= $this->pdostatement->execute();
+        if($executeIsOk){
+            $profil = $this->pdostatement->fetchObject('model\Projet5_user');
+            if($profil===false){
+                return null;
+            }
+            else{
+                return $profil;
+            }
+        }else{
+            return false;
+        }
+
+
+    }
 
 
 

@@ -18,7 +18,7 @@ Autoloader::register();
         function twigRender($renderPath,$argument1,$argument2,$argument3,$argument4)
         {
             //$user = new UserManager();
-
+            $mailManager = new \model\MailsManager();
 
 
 
@@ -31,13 +31,12 @@ Autoloader::register();
             } else {
                 @$src = "users/img/user/" . $_COOKIE['username'] . "/crop/img_001-cropped.jpg";
             }
-
-           /* @$getArchiveMessages=$user->getArchiveMessages($_COOKIE['ID']);
-            @$getReadMessages=$user->getReadMessages($_COOKIE['ID']);
-            @$countUreadMessages = $user->countUnreadMessage($_COOKIE['ID']);
-            @$countReadMessages = $user->countReadMessage($_COOKIE['ID']);
-            @$archiveMessage = $user->countArchiveMessage($_COOKIE['ID']);
-            @$countSentMessage = $user->countSentMessages($_COOKIE['ID']);*/
+           @$getSeenMessages=$mailManager->getMessages($_COOKIE['ID'],1);
+           @$getArchiveMessages=$mailManager->getMessages($_COOKIE['ID'],2);
+           @$countUnseenMessages = $mailManager->countMessages($_COOKIE['ID'],0);
+            @$countSeenMessages = $mailManager->countMessages($_COOKIE['ID'],1);
+            @$countArchivedMessage = $mailManager->countMessages($_COOKIE['ID'],2);
+            @$countSentMessage = $mailManager->countSentMessages($_COOKIE['ID']);
 
 
 
@@ -63,12 +62,12 @@ Autoloader::register();
             echo $twig->render($renderPath,[
                 'userDatum' => $_SESSION,
                 @'imageProfil'=>$src,
-               /* 'Messagesread'=>$getReadMessages,
+                @'Messagesread'=>$getSeenMessages,
                 'archiveMessages'=>$getArchiveMessages,
-               // 'unreadMessages'=>$countUreadMessages,
-                'countReadMessages'=>$countReadMessages,
-                'countArchiveMessages'=>$archiveMessage,
-                'countSentMessages'=>$countSentMessage,*/
+                'unreadMessages'=>$countUnseenMessages,
+                'countReadMessages'=>$countSeenMessages,
+                'countArchiveMessages'=>$countArchivedMessage,
+                'countSentMessages'=>$countSentMessage,
 
 
 

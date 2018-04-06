@@ -288,8 +288,8 @@ function galerie1()
 
 function infosUser()
 {
-    $user= new oldUserManager();
-    $getinfos= $user->getUserInfos($_COOKIE['ID']);
+    $infosUser = new \model\InfosuserManager();
+    $getinfos= $infosUser->read($_COOKIE['ID']);
 
 
 
@@ -674,26 +674,29 @@ function viewerGalerie2($imageId)
 
 function saveUserinfos($userId)
 {
+    $infoUser = new \model\Projet5_infosuser();
+    $infoUser
+        ->setUserId(intval($_COOKIE['ID']))
+        ->setSearch($_POST['search'])
+        ->setPostalCode(intval($_POST['postal_code']))
+        ->setCity($_POST['city'])
+        ->setPurpose($_POST['purpose'])
+        ->setFamilySituation($_POST['family_situation'])
+        ->setChildren($_POST['children'])
+        ->setFamilySituationAdd($_POST['family_situation_add'])
+        ->setPhysicAdd($_POST['physic_add'])
+        ->setSpeech($_POST['speech'])
+        ->setSchoolLevel($_POST['school_level'])
+        ->setSchoolLevelAdd($_POST['school_level_add'])
+        ->setWork($_POST['work'])
+        ->setWorkAdd($_POST['work_add']);
 
 
-    /*
-    $_SESSION['postal_code']= $_POST['postal_code'];
-    $_SESSION['city']= $_POST['city'];
-    $_SESSION['search']= $_POST['search'];
-    $_SESSION['purpose']= $_POST['purpose'];
-    $_SESSION['family_situation']= $_POST['family_situation'];
-    $_SESSION['children']= $_POST['children'];
-    $_SESSION['family_situation_add']= $_POST['family_situation_add'];
-    $_SESSION['physic_add']= $_POST['physic_add'];
-    $_SESSION['speech']= $_POST['speech'];
-    $_SESSION['school_level']= $_POST['school_level'];
-    $_SESSION['school_level_add']= $_POST['school_level_add'];
-    $_SESSION['work']= $_POST['work'];
-    $_SESSION['work_add']= $_POST['work_add'];*/
+
+    $InfoManager= new \model\InfosuserManager();
+    $addInfosUser= $InfoManager->create($infoUser);
 
 
-    $user=new oldUserManager();
-    $userInfos = $user->addUserInfos($userId);var_dump($userInfos);
 
 
 
@@ -704,21 +707,22 @@ function saveUserinfos($userId)
 
 function deleteUserInfos($userId)
 {
-    $user=new oldUserManager();
-    $deleteInfo=$user->deleteUserInfos($userId);
+    $infomanager = new \model\InfosuserManager();
+    $deleteUserInfos=$infomanager->delete($userId);
+
     twigRender('infosUser.html.twig','','','','');
 }
 
 function messages($userId)
 {
 
-    $user= new oldUserManager();
-    $getUnreadMessages = $user->getUnreadMessages($userId);
-    $getReadMessages = $user->getReadMessages($userId);
-    $sentMessages=$user->sentMessages($userId);
+    $mailManager = new \model\MailsManager();
+
+    $unSeenMessage =$mailManager->getMessages($userId,0);
+    $sentMessages=$mailManager->getSentMessages($userId);
 
 
-    twigRender('messages.html.twig','messages',$getUnreadMessages,'sentMessages',$sentMessages);
+    twigRender('messages.html.twig','unSeenMessages',$unSeenMessage,'sentMessages',$sentMessages);
 
 }
 
@@ -730,24 +734,25 @@ function messages($userId)
  */
 function readUnreadMessages($messageId,$userId)
 {
-    $user= new oldUserManager();
-   $readUnreadMessage =$user->readUnreadMessages($messageId,$userId);
+    $mailManager= new \model\MailsManager();
+   $readUnseenMessage =$mailManager->readMessages($messageId,$userId,'expeditor','receiver');
+   $updateUnseenMessage = $mailManager->updateStatus($messageId,1);
 
-twigRender('readMessage.html.twig','mailContents',$readUnreadMessage,'','');
+twigRender('readMessage.html.twig','mailContents',$readUnseenMessage,'','');
 }
 
 function readArchivedMessages($messageId,$userId)
 {
-    $user= new oldUserManager();
-    $readArchivedMessages =$user->readArchivedMessages($messageId,$userId);
+    $mailManager= new \model\MailsManager();
+    $readArchivedMessages =$mailManager->readMessages($messageId,$userId,'expeditor','receiver');
 
     twigRender('readArchivedMessages.html.twig','archivedMessages',$readArchivedMessages,'','');
 }
 
 function sentMessages($messageId,$userId)
 {
-    $user= new oldUserManager();
-    $sentMessages= $user->sentMessage($messageId,$userId);
+    $mailManager= new \model\MailsManager();
+    $sentMessages =$mailManager->readMessages($messageId,$userId,'receiver','expeditor');
 
     twigRender('sentMessages.html.twig','sentMessages',$sentMessages,'','');
 }
@@ -758,8 +763,8 @@ function sentMessages($messageId,$userId)
 
 function deleteMessage($messageId)
 {
-    $user= new oldUserManager();
-    $deleteMessage =$user->deleteMessage($messageId);
+    $mailManager=new \model\MailsManager();
+    $deleteMessage =$mailManager->delete($messageId);
 
     header('Location:index.php?p=messages');
 
@@ -869,8 +874,8 @@ function eraseUser($userId)
 
 function archiveMessages($messageId,$userId)
 {
-    $user= new oldUserManager();
-    $archiveMessages = $user->archiveMessages($messageId,$userId);
+    $mailManager = new \model\MailsManager();
+    $update2Archived = $mailManager->updateStatus($messageId,2);
 
     header('Location:index.php?p=messages');
 }
