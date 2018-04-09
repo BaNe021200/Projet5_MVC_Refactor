@@ -76,7 +76,7 @@
                                 {% for unSeenMessage in unSeenMessages %}
                                     <tr>
                                         <td scope="row"><img src="{{ unSeenMessage.dirname }}/{{ unSeenMessage.filename }}.{{ unSeenMessage.extension }}" class="mailAvatar" width="50" height="50"></td>
-                                        <td>De : <a href="index.php?p=homeUserFront&amp;userId={{ unSeenMessage.id }}">{{ unSeenMessage.username }}</a></td>
+                                        <td><a href="index.php?p=homeUserFront&amp;userId={{ unSeenMessage.id }}">{{ unSeenMessage.username }}</a></td>
                                         <td ><a title="lire le message de {{ unSeenMessage.username }}" href="index.php?p=readMessage&amp;messageId={{unSeenMessage.mp_id }}"  >{{ unSeenMessage.title }}</a></td>
                                         <td>{{ unSeenMessage.message |truncate}}</td>
                                         <td>{{ unSeenMessage.time_date_fr }}</td>

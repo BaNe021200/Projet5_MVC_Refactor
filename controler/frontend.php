@@ -46,11 +46,31 @@ function homeUserFront($userId)
 
 function userGalerie($userId,$username)
 {
-    $user= new oldUserManager();
-    $userGalerie= $user->frontUsergalerie($userId,$username);
+    $imageManager = new \model\ThumbnailsManager();
+    $usermanager=new \model\Manager();
 
-    twigRender('frontend/userGalerie.html.twig','images',$userGalerie,'','');
+    //$userGalerie= $user->frontUsergalerie($userId,$username);
+    $userGalerie= $imageManager->read($userId);
+    $username=$usermanager->readQItemUser($username,"username");
+
+
+
+    twigRender('frontend/userGalerie.html.twig','images',$userGalerie,'username',$username);
 }
+
+
+function frontGalerieViewer($imageId,$username)
+{
+
+    $imageManager=new \model\ImagesManager();
+    $view = $imageManager->read($imageId);
+
+
+    twigRender('frontend/frontGalerieViewer.html.twig','view',$view,'username',$username);
+}
+
+
+
 
 function get_registry()
 {
@@ -109,7 +129,7 @@ function get_registry()
     {
 
 
-        $message[] = 'Bienvenue ! votre inscription à bien été prise en compte, vous pouvez désormais vous connecter avec vos idenfiants';
+        $message[] = 'Bienvenue ! votre inscription à bien été prise en compte, vous pouvez désormais vous connecter avec vos idenfiants. Un mail vous a été envoyé';
     }
     else
     {
@@ -131,13 +151,20 @@ function get_registry()
 function sendMessage($expeditor, $receiver)
 {
 
-    $user= New oldUserManager();
-    $sendMessage = $user->sendMail($expeditor, $receiver);
+    $message = new \model\Projet5_mails();
+    $message
+        ->setExpeditor(intval($_GET['expeditor']))
+        ->setReceiver(intval($_GET['receiver']))
+        ->setTitle($_POST['title'])
+        ->setMessage($_POST['message']);
+
+    $mailManager = new \model\MailsManager();
+    $sendMessage = $mailManager->create($message);
 
 
     if ($sendMessage)
     {
-        $Session = new Session();
+        $Session = new \model\Session();
         $Session->setFlash('votre message est envoyé','success');
         $Session->flash();
         //header('Location:index.php?p=homeUserFront&userId='.$receiver);
@@ -151,6 +178,11 @@ function sendMessage($expeditor, $receiver)
         $Session->flash();
         twigRender('homeUser.html.twig','','','','');
     }
+
+
+
+
+
 
 
 

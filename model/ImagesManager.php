@@ -71,7 +71,7 @@ class ImagesManager
      * Null s'il n'y aucune correspondance
      */
     public function read($userId){
-        $this->pdostatement= $this->pdo->prepare('SELECT * FROM projet5_images WHERE user_id= :userId');
+        $this->pdostatement= $this->pdo->prepare('SELECT * FROM projet5_images WHERE id= :userId');
         //liaison paramètres
         $this->pdostatement->bindValue(':userId',$userId,PDO::PARAM_INT);
         //Execution de la requête

@@ -4,7 +4,7 @@ session_start();
 require_once 'vendor/autoload.php';
 require_once 'model/Autoloader.php';
 require_once 'controler/backend.php';
-require_once 'lib/Session.php';
+//require_once 'lib/Session.php';
 use model\Autoloader;
 Autoloader::register();
 

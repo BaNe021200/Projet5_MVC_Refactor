@@ -139,6 +139,26 @@ class MailsManager
         }
     }
 
+    public function read($id){
+        $this->pdostatement= $this->pdo->prepare('SELECT * FROM projet5_mails WHERE id= :id');
+        //liaison paramètres
+        $this->pdostatement->bindValue(':id',$id,PDO::PARAM_INT);
+        //Execution de la requête
+        $executeIsOk= $this->pdostatement->execute();
+        if($executeIsOk){
+            $message = $this->pdostatement->fetchObject('model\Projet5_mails');
+            if($message===false){
+                return null;
+            }
+            else{
+                return $message;
+            }
+        }else{
+            return false;
+        }
+    }
+
+
     public function updateStatus($messageId,$mp_read)
     {
         $this->pdostatement = $this->pdo->prepare("
@@ -194,10 +214,10 @@ class MailsManager
 
     }
 
-    public function delete($messageId){
+    public function delete(Projet5_mails $mail){
 
         $this->pdostatement=$this->pdo->prepare('DELETE FROM Projet5_mails WHERE id= :id LIMIT 1');
-        $this->pdostatement->bindValue(':id',$messageId, PDO::PARAM_INT);
+        $this->pdostatement->bindValue(':id',$mail->getId(), PDO::PARAM_INT);
         //execution de la requête
         return $this->pdostatement->execute();
     }

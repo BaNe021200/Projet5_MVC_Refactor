@@ -649,20 +649,13 @@ function deleteImage($userId,$imageId)
 
 function viewerGalerie($imageId)
 {
+
     $imageManager=new \model\ImagesManager();
     $view = $imageManager->read($imageId);
 
     twigRender('galerieViewer.html.twig','view',$view,'','');
 }
 
-function frontGalerieViewer($imageId,$username)
-{
-    $user=new oldUserManager();
-    $view = $user->getFrontUserView($imageId,$username);
-
-
-    twigRender('frontend/frontGalerieViewer.html.twig','view',$view,'','');
-}
 
 function viewerGalerie2($imageId)
 {
@@ -764,7 +757,8 @@ function sentMessages($messageId,$userId)
 function deleteMessage($messageId)
 {
     $mailManager=new \model\MailsManager();
-    $deleteMessage =$mailManager->delete($messageId);
+    $deleteMessage =$mailManager->read($messageId);
+    $mailManager->delete($deleteMessage);
 
     header('Location:index.php?p=messages');
 

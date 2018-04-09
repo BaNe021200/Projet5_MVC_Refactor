@@ -1,5 +1,5 @@
 <?php
-namespace lib;
+namespace model;
 /**
  * Created by PhpStorm.
  * User: connector

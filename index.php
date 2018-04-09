@@ -4,8 +4,18 @@ require_once 'twig.php';
 require_once 'controler/backend.php';
 require_once 'controler/frontend.php';
 require_once 'model/Autoloader.php';
+require_once "lib/LibLoader.php";
+
+
+
 use model\Autoloader;
+use lib\LibLoader;
 Autoloader::register();
+LibLoader::register();
+
+
+
+
 
 try
 {
@@ -174,7 +184,7 @@ if (isset($_GET['p']))
                         }
                         else
                         {
-                            throw new Exception("le champs pseudos n'accepte que des lettres (majuscules et/ou minuscules).Les espaces sont représentés par des tirets bas (underscores : '_') et apparaitront sur le site. ");
+                            throw new Exception("le champs pseudos n'accepte que des lettres (majuscules et/ou minuscules).Les espaces sont représentés, dans le formulaire, par des tirets bas (underscores : '_'). Ils apparaitront sur le site. ");
                         }
 
 

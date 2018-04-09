@@ -21,6 +21,8 @@ class Autoloader
     {
 
      $class=str_replace('model\\','',$class);
+     //$class=str_replace('lib\\','',$class);
+
         //var_dump($class);
         require_once 'model/'.$class.'.php';
 

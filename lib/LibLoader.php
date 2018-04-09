@@ -9,7 +9,7 @@
 namespace lib;
 
 
-class Autoloader_lib
+class LibLoader
 {
 
    static function register(){

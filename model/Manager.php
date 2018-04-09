@@ -140,6 +140,38 @@ class Manager
 
     }
 
+    public function readQItemUser($item,$Queryitem){
+
+
+
+
+
+        $this->pdostatement= $this->pdo->prepare('SELECT '.$Queryitem.' FROM projet5_user WHERE '.$Queryitem.' = :item');
+        //liaison paramètres
+        $this->pdostatement->bindValue(':item',$item,PDO::PARAM_STR);
+        //Execution de la requête
+        $executeIsOk= $this->pdostatement->execute();
+        if($executeIsOk){
+            $user = $this->pdostatement->fetchObject('model\Projet5_user');
+            if($user===false){
+                return null;
+
+            }
+            else{
+                return $user;
+
+            }
+        }else{
+            return false;
+        }
+
+
+    }
+
+
+
+
+
     public function homeDisplay()
     {
        $this->pdostatement=$this->pdo->query('
