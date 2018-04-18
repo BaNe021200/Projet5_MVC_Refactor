@@ -32,7 +32,7 @@ class Manager
      */
     public function __construct()
     {
-        $this->pdo = new PDO('mysql:host=localhost;dbname=twig','root','nzB69yCSBDz9eK46',array(PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION));
+        $this->pdo = new PDO('mysql:host=localhost;dbname=twig','root','',array(PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION));
 
     }
 
